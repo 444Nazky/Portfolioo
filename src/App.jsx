@@ -33,6 +33,16 @@ const App = () => {
     document.documentElement.style.setProperty("--scroll-thumb", scrollbarColors[activeColor]);
   }, [activeColor]);
 
+  // Fallback: if loading takes too long, force it to finish
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+      }
+    }, 5000); // 5 second timeout
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   const themeMap = {
     emerald: {
       accent: "#10b981",
