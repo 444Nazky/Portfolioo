@@ -20,7 +20,8 @@ const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // preloader
   const [loading, setLoading] = useState(true);
-  
+  const [isReady, setIsReady] = useState(false);
+  // scrollbarcolos
   const scrollbarColors = {
     emerald: "#10b981",
     sky: "#0ea5e9",
@@ -31,17 +32,7 @@ const App = () => {
 
   useEffect(() => {
     document.documentElement.style.setProperty("--scroll-thumb", scrollbarColors[activeColor]);
-  }, [activeColor]);
-
-  // Fallback: if loading takes too long, force it to finish
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loading) {
-        setLoading(false);
-      }
-    }, 5000); // 5 second timeout
-    return () => clearTimeout(timer);
-  }, [loading]);
+  });
 
   const themeMap = {
     emerald: {
@@ -68,7 +59,9 @@ const App = () => {
 
   useEffect(() => {
     const theme = themeMap[activeColor];
+
     if (!theme) return;
+
     document.documentElement.style.setProperty("--accent", theme.accent);
     document.documentElement.style.setProperty("--accent-rgb", theme.accentRgb);
   }, [activeColor]);
@@ -88,17 +81,17 @@ const App = () => {
       case "chat":
         return <Chat />;
       default:
-        return <About />;
+        return  <About isReady={isReady} />;
     }
   };
 
   return (
-    <div className={`select-none relative min-h-screen bg-zinc-950 overflow-hidden ${loading ? "opacity-0" : "opacity-100"}`}>
+    <div className={`select-none relative min-h-screen bg-zinc-950 overflow-hidden {${loading ? "opacity-0" : "opacity-100"}`}>
       {/* BACKGROUND */}
       <Aurora style={{ border: "2px solid black" }} />
 
       {/* CONTENT WRAPPER */}
-      <div className="relative z-10 flex items-center justify-center p-6 h-screen">
+      <div className="relative z-10 flex items-center justify-center p-6 h-screen ">
         <div className={`w-full max-w-7xl h-[85vh] bg-zinc-900 rounded-2xl shadow-2xl flex text-zinc-100 ${activeColor}`}>
           <Sidebar setActivePage={setActivePage} activePage={activePage} setActiveColor={setActiveColor} activeColor={activeColor} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
@@ -109,9 +102,9 @@ const App = () => {
         </div>
       </div>
       {loading && <Preloader onFinish={() => setLoading(false)} />}
+      {!isReady && <Preloader onFinish={() => setIsReady(true)} />}
     </div>
   );
 };
 
 export default App;
-
